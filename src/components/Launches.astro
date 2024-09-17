@@ -1,0 +1,49 @@
+---
+interface Launch {
+    name: string;
+    date_unix: number;
+    details: string;
+}
+
+interface LaunchData {
+    docs: Launch[];
+}
+
+const res = await fetch("https://api.spacexdata.com/v5/launches/query", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        query: {},
+        options: {
+            sort: {
+                date_unix: "asc",
+            },
+            limit: 12,
+        }
+    })
+});
+
+const data: LaunchData = await res.json();
+---
+
+<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {data.docs.map((launch: Launch) => (
+        <article class="launch-article">
+            <h2>{launch.name}</h2>
+            <p>{new Date(launch.date_unix * 1000).toLocaleDateString()}</p>
+            <p>{launch.details}</p>
+        </article>
+    ))}
+</div>
+
+<style>
+    .launch-article {
+        color: black;
+        border: 1px solid #ccc;
+        padding: 16px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+    </style>
